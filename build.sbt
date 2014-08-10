@@ -1,10 +1,15 @@
 import scalariform.formatter.preferences._
+import com.typesafe.sbt.SbtStartScript
+
+seq(SbtStartScript.startScriptForClassesSettings: _*)
 
 name := "twitchtally"
 
 version := "0.0.1-SNAPSHOT"
 
 scalaVersion := "2.11.1"
+
+scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
 resolvers ++= Seq(
   "Sonatype Releases" at "http://oss.sonatype.org/content/repositories/releases",
