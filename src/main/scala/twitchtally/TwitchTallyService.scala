@@ -32,6 +32,23 @@ trait TwitchTallyService extends HttpService {
   //  } // ~
   //  pathPrefix("js") { complete { "it works too~!" } } //getFromResourceDirectory("/js") }
 
-  val route = getFromResource("/html/main.html")
+  val route = complete {
+    main
+  }
+
+  val main =
+    <html>
+      <head>
+        <title>All your twitch emotes are belong to us</title>
+      </head>
+      <body>
+        <ul data-bind="foreach: emotes">
+          <li data-bind="css: changed"><img data-bind="attr: { src: url, alt: name}"/><span class="tally" data-bind="text: tally"></span></li>
+        </ul>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
+        <script src="js/main.js"></script>
+      </body>
+    </html>
 }
 
