@@ -10,7 +10,8 @@ object Boot extends App {
   implicit val system = ActorSystem("twitchtally-system")
 
   def channelsetup = {
-    val channelnames: Future[List[Channel]] = ???
+    val subemotes: Future[Map[String, Set[String]]] = ???
+    val channels: Future[List[String]] = ???
 
   }
 
@@ -18,15 +19,8 @@ object Boot extends App {
   val service = system.actorOf(Props[TwitchTallyServiceActor], "twitchtally-service")
 
   // start a new HTTP server on port 8080 with our service actor as the handler
-  IO(Http) ! Http.Bind(service, "localhost", port = 8080)
+  IO(Http) ! Http.Bind(service, "localhost", port = 80)
 
-}
-
-case class Channel(subs: Set[String], plebemotes: List[String], allemotes: List[String]) {
-  def emotes(in: Iterator[Byte], chatter: String) {
-    val matchees = if (subs.contains(chatter)) allemotes else plebemotes
-    new Matcher(in, matchees).run
-  }
 }
 
 class Matcher(in: Iterator[Byte], matchees: List[String]) {
