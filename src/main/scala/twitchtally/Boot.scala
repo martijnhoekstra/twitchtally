@@ -7,6 +7,22 @@ import spray.can.Http
 
 object Boot extends App {
   // we need an ActorSystem to host our application in
+  val port = {
+    try {
+      System.getenv("PORT").toInt
+    } catch {
+      case e: java.lang.NumberFormatException => {
+        println("port not a number")
+        80
+      }
+      case e: _ => {
+        println("dafuq?")
+        println(e)
+        80
+      }
+
+    }
+  }
   implicit val system = ActorSystem("twitchtally-system")
 
   def channelsetup = {
@@ -19,7 +35,7 @@ object Boot extends App {
   val service = system.actorOf(Props[TwitchTallyServiceActor], "twitchtally-service")
 
   // start a new HTTP server on port 8080 with our service actor as the handler
-  IO(Http) ! Http.Bind(service, "localhost", port = 80)
+  IO(Http) ! Http.Bind(service, "localhost", port = port)
 
 }
 
