@@ -15,7 +15,7 @@ object Boot extends App {
         println("port not a number")
         80
       }
-      case e: _ => {
+      case e: Throwable => {
         println("dafuq?")
         println(e)
         80
