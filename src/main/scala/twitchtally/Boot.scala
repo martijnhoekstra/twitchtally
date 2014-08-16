@@ -35,7 +35,7 @@ object Boot extends App {
   val service = system.actorOf(Props[TwitchTallyServiceActor], "twitchtally-service")
 
   // start a new HTTP server on port 8080 with our service actor as the handler
-  IO(Http) ! Http.Bind(service, "localhost", port = port)
+  IO(Http) ! Http.Bind(service, "0.0.0.0", port = port)
 
 }
 
