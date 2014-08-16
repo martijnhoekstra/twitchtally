@@ -1,20 +1,21 @@
 function emote(json) {
 	this.name = json.regex;
-	this.url = ko.observable(json.images.url);
+	this.url = ko.observable(json.images[0].url);
 	this.tally = ko.observable(0);
+	this.changed = ko.observable(false);
 }
 
 function fetchemotes(emoteobslist) {
 	var req = $.ajax({
-		url: "//api.twitch.tv/kraken/chat/emoticons",
-		jsonp: "callback",
-	  datatype: "jsonp"
+		url: "/emoticons",
+	  datatype: "json"
 	});
 
+
 	var myemotes = req.done(  function(obj) {
-		var data = obj.data
-		console.debug(obj);
-    emoteobslist(data.emoticons.map(function(item){ return emote(item); }));
+		var data = JSON.parse(obj)
+		console.debug(data);
+    emoteobslist(data.emoticons.slice(0, 1000).map(function(item){ return new emote(item); }));
 	});
 }
 

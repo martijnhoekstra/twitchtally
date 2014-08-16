@@ -7,8 +7,16 @@ import spray.routing.directives.CachingDirectives._
 import spray.httpx.encoding._
 import akka.actor.ActorSystem
 import akka.actor.Actor
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+import spray.http._
+import spray.client.pipelining._
+import spray.json._
+import spray.httpx.SprayJsonSupport._
+import scala.concurrent.duration._
+import scala.concurrent.Await
 
-class TwitchTallyServiceActor extends TwitchTallyService with Actor {
+class TwitchTallyServiceActor extends HttpService with Actor {
 
   // the HttpService trait defines only one abstract member, which
   // connects the services environment to the enclosing actor or test
@@ -19,36 +27,30 @@ class TwitchTallyServiceActor extends TwitchTallyService with Actor {
   // timeout handling or alternative handler registration
   def receive = runRoute(route)
 
-}
+  val route = {
+    pathSingleSlash {
+      getFromResource("public/html/main.html")
+    } ~
+      pathPrefix("js") {
+        getFromResourceDirectory("public/js")
+      } ~
+      pathPrefix("css") {
+        getFromResourceDirectory("public/css")
+      } ~
+      path("emoticons") {
+        complete {
+          getAllEmotes
+        }
 
-trait TwitchTallyService extends HttpService {
+      }
 
-  //implicit def executionContext = actorRefFactory.dispatcher
-
-  //val route = {
-  //pathSingleSlash {
-  //  getFromResource("/main.html")
-  //  }
-  //  } // ~
-  //  pathPrefix("js") { complete { "it works too~!" } } //getFromResourceDirectory("/js") }
-
-  val route = complete {
-    main
   }
 
-  val main =
-    <html>
-      <head>
-        <title>All your twitch emotes are belong to us</title>
-      </head>
-      <body>
-        <ul data-bind="foreach: emotes">
-          <li data-bind="css: changed"><img data-bind="attr: { src: url, alt: name}"/><span class="tally" data-bind="text: tally"></span></li>
-        </ul>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
-        <script src="js/main.js"></script>
-      </body>
-    </html>
-}
+  val getAllEmotes = {
 
+    implicit def ec: ExecutionContext = context.dispatcher
+
+    val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
+    Await.result(pipeline(Get("http://api.twitch.tv/kraken/chat/emoticons")).map(res => res.entity.asString), 20 seconds)
+  }
+}

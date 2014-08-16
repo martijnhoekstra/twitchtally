@@ -13,13 +13,16 @@ scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
 resolvers ++= Seq(
   "Sonatype Releases" at "http://oss.sonatype.org/content/repositories/releases",
-  "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases"
+  "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases",
+  "spray" at "http://repo.spray.io/"
 )
 
 libraryDependencies ++= Seq(
   "org.scalacheck" %% "scalacheck" % "1.11.4" % "test",
   "io.spray" %% "spray-can" % "1.3.1",
   "io.spray" %% "spray-routing" % "1.3.1",
+  "io.spray" %% "spray-client" % "1.3.1",
+  "io.spray" %%  "spray-json" % "1.2.6",
   "com.typesafe.akka" %% "akka-actor" % "2.3.4"
 )
 

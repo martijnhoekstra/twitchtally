@@ -2,9 +2,10 @@
 <html>
 <head>
 	<title>All your twitch emotes are belong to us</title>
+	<link href="css/main.css" rel="stylesheet" type="text/css" media="all">
 </head>
 <body>
-	<ul data-bind="foreach: emotes">
+	<ul class="emotelist" data-bind="foreach: emotes">
 		<li data-bind="css: changed"><img data-bind="attr: { src: url, alt: name}"/><span class="tally" data-bind="text: tally"></span></li>
 	</ul>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>

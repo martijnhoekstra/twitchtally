@@ -2,15 +2,70 @@ package twitchtally
 
 import akka.actor.{ ActorSystem, Props }
 import akka.io.IO
+import scala.concurrent.Future
 import spray.can.Http
 
 object Boot extends App {
   // we need an ActorSystem to host our application in
   implicit val system = ActorSystem("twitchtally-system")
 
+  def channelsetup = {
+    val channelnames: Future[List[Channel]] = ???
+
+  }
+
   // create and start our service actor
   val service = system.actorOf(Props[TwitchTallyServiceActor], "twitchtally-service")
 
   // start a new HTTP server on port 8080 with our service actor as the handler
   IO(Http) ! Http.Bind(service, "localhost", port = 8080)
+
 }
+
+case class Channel(subs: Set[String], plebemotes: List[String], allemotes: List[String]) {
+  def emotes(in: Iterator[Byte], chatter: String) {
+    val matchees = if (subs.contains(chatter)) allemotes else plebemotes
+    new Matcher(in, matchees).run
+  }
+}
+
+class Matcher(in: Iterator[Byte], matchees: List[String]) {
+  var inProgress: List[(String, Int)] = Nil
+  var done: List[String] = Nil
+
+  def run: List[String] = {
+    while (in.hasNext) {
+      val next = in.next
+      if (next == 10) {
+        return done
+      } else {
+        val nextprogress: List[Either[String, (String, Int)]] = (inProgress ++ matchees.map(s => (s, 0))) collect {
+          case t if t._1(t._2) == next => if (t._2 == t._1.length - 1) {
+            Left(t._1)
+          } else {
+            Right(t._1, t._2 + 1)
+          }
+        }
+        inProgress = nextprogress.collect { case Right(x) => x }
+        done = done ++ nextprogress.collect { case Left(x) => x }
+      }
+    }
+    done
+  }
+}
+
+class RingBuffer(size: Int) {
+  val buffer = new Array[Byte](size)
+  var pos = 0
+  def put(b: Byte) = {
+    buffer(pos) = b
+    pos = (pos + 1) % (size - 1)
+  }
+  def last(amount: Int) = {
+    val startpos = (pos - amount) % (size - 1)
+    val endpos = pos
+  }
+
+}
+
+case class PartialMatch()

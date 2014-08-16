@@ -1,0 +1,22 @@
+.body {
+	
+}
+
+ul.emotelist li {
+	display: inline-block;
+	list-style-type: none;
+	width: 100px;
+	height: 30px;
+	background-color: lightgrey;
+	border-style: none;
+	margin:2px;
+	vertical-align: top;
+	border-radius: 3px;
+}
+
+.tally {
+	text-align:right;
+	font-size:smaller;
+	float:right;
+	padding:3px;
+}
