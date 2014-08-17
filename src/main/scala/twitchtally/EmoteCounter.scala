@@ -7,6 +7,7 @@ import spray.http.Uri
 
 class EmoteCounter(_tally: Map[String, (Uri, Long)]) extends Actor {
   var tally = _tally
+  var updates = Map[String, (Uri, Long)]()
 
   def receive = {
     case name: String => {
@@ -14,18 +15,22 @@ class EmoteCounter(_tally: Map[String, (Uri, Long)]) extends Actor {
         case Some(value) => {
           val (url, count) = value
           tally = tally + ((name, (url, count + 1)))
+          updates = updates + ((name, (url, count + 1)))
         }
         case None => ()
       }
-
     }
     case emote: Emote => {
       tally.get(emote.name) match {
         case None => tally + ((emote.name, (emote.url, 0l)))
         case _    => ()
       }
-
     }
+    case Updaterequest => {
+      sender ! updates
+      updates = Map[String, (Uri, Long)]()
+    }
+
   }
 }
 
@@ -34,3 +39,4 @@ object EmoteCounter {
 }
 
 case class Emote(name: String, url: Uri)
+case object Updaterequest

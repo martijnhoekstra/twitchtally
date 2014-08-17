@@ -6,7 +6,7 @@
 </head>
 <body>
 	<ul class="emotelist" data-bind="foreach: emotes">
-		<li data-bind="css: changed"><img data-bind="attr: { src: url, alt: name}"/><span class="tally" data-bind="text: tally"></span></li>
+		<li data-bind="css: changed"><img data-bind="attr: { src: url, alt: name, title: name}"/><span class="tally" data-bind="text: tally"></span></li>
 	</ul>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
